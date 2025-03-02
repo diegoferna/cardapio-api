@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id          String  @id @default(uuid())
+  nome        String
+  descricao   String
+  preco       Float
+  imagem      String
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  cardapio   Cardapio @relation(fields: [cardapioId], references: [id])
+
+  cardapioId String
+  categoriaId String
+  criadoEm    DateTime @default(now())
+}
+
+model Categoria {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  produtos  Produto[]
+  criadoEm  DateTime @default(now())
+}
+
+model Cardapio {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  turno     Turno
+  produtos  Produto[] 
+  criadoEm  DateTime @default(now())
+}
+
+enum Turno {
+  DIURNO
+  NOTURNO
+}

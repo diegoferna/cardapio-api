@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CardapioService } from './cardapio.service';
 import { CardapioController } from './cardapio.controller';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
+  imports: [PrismaModule],
   providers: [CardapioService],
-  controllers: [CardapioController, PrismaService],
+  controllers: [CardapioController],
 })
 export class CardapioModule {}

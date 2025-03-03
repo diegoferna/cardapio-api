@@ -1,28 +1,45 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
 import { CriarCategoriaDto } from './dto/create-categoria.dto';
 
-@Controller('categoria')
+@Controller('categorias')
 export class CategoriaController {
   constructor(private categoriaService: CategoriaService) {}
 
-  async criar(data: CriarCategoriaDto) {
-    return this.categoriaService.ciar(data);
+  @Get(':id/produtos')
+  async obterCategoriaComProdutos(@Param('id') id: string) {
+    return this.categoriaService.obterCategoriaComProdutos(id);
+  }
+  @Post()
+  async criar(@Body() data: CriarCategoriaDto) {
+    return this.categoriaService.criar(data);
   }
 
+  @Get()
   async listar() {
     return this.categoriaService.listar();
   }
 
-  async obterPorId(id: string) {
+  @Get(':id')
+  async obterPorId(@Param('id') id: string) {
     return this.categoriaService.obterPorId(id);
   }
 
-  async atualizar(id: string, data: CriarCategoriaDto) {
+  @Put(':id')
+  async atualizar(@Param('id') id: string, data: CriarCategoriaDto) {
     return this.categoriaService.atualizar(id, data);
   }
 
-  async deletar(id: string) {
+  @Delete(':id')
+  async deletar(@Param('id') id: string) {
     return this.categoriaService.deletar(id);
   }
 }

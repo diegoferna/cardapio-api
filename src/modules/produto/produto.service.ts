@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CriarProdutoDto } from './dto/create-produto.dto';
 import { AtualizarProdutoDto } from './dto/atualizar-produto.dto';
@@ -8,22 +12,45 @@ export class ProdutoService {
   constructor(private readonly prisma: PrismaService) {}
 
   async criar(data: CriarProdutoDto) {
-    return this.prisma.produto.create({ data });
+    try {
+      return await this.prisma.produto.create({ data });
+    } catch (error) {
+      console.error('Erro ao criar produto:', error);
+      throw new InternalServerErrorException('Erro ao criar produto.');
+    }
   }
 
   async listar() {
-    return this.prisma.produto.findMany();
+    return await this.prisma.produto.findMany();
   }
 
   async obterPorId(id: string) {
-    return this.prisma.produto.findUnique({ where: { id } });
+    const produto = await this.prisma.produto.findUnique({ where: { id } });
+
+    if (!produto) {
+      throw new NotFoundException(`Produto com ID ${id} não encontrado.`);
+    }
+
+    return produto;
   }
 
   async atualizar(id: string, data: AtualizarProdutoDto) {
-    return this.prisma.produto.update({ where: { id }, data });
+    try {
+      return await this.prisma.produto.update({ where: { id }, data });
+    } catch {
+      throw new NotFoundException(
+        `Não foi possível atualizar. Produto com ID ${id} não encontrado.`,
+      );
+    }
   }
 
   async deletar(id: string) {
-    return this.prisma.produto.delete({ where: { id } });
+    try {
+      return await this.prisma.produto.delete({ where: { id } });
+    } catch {
+      throw new NotFoundException(
+        `Não foi possível excluir. Produto com ID ${id} não encontrado.`,
+      );
+    }
   }
 }
